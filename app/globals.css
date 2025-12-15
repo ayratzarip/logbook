@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  /* Custom colors */
+  --primary: #3A5BA0;
+  --primary-light: #6EC6F5;
+  --surface-light: #F6F8FB;
+  --surface-dark: #181C24;
+  --card-light: #FFFFFF;
+  --card-dark: #232A3B;
+  --text-primary: #222B45;
+  --text-secondary: #172554;
+  --text-muted: #B0B8C1;
+}
+
+.dark {
+  --background: #181C24;
+  --foreground: #ededed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  
+  /* Primary colors */
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  
+  /* Surface colors */
+  --color-surface-light: var(--surface-light);
+  --color-surface-dark: var(--surface-dark);
+  
+  /* Card colors */
+  --color-card-light: var(--card-light);
+  --color-card-dark: var(--card-dark);
+  
+  /* Text colors */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-nunito), 'Nunito', Arial, Helvetica, sans-serif;
+}
+
+/* Telegram Web App стили */
+html {
+  --telegram-bg-color: var(--background);
+  --telegram-text-color: var(--foreground);
+}

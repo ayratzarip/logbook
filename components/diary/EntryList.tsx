@@ -1,0 +1,66 @@
+'use client';
+
+import { useDiaryStore } from '@/lib/store/diary-store';
+import { EntryCard } from './EntryCard';
+import { Card } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+import { getTelegramWebApp } from '@/lib/utils/telegram';
+
+export function EntryList() {
+  const filteredEntries = useDiaryStore((state) => state.filteredEntries());
+  const deleteEntry = useDiaryStore((state) => state.deleteEntry);
+  const router = useRouter();
+
+  const handleDelete = async (id: string) => {
+    const webApp = getTelegramWebApp();
+    
+    const confirmed = webApp
+      ? await new Promise<boolean>((resolve) => {
+          webApp.showConfirm('Вы уверены, что хотите удалить эту запись?', (confirmed) => {
+            resolve(confirmed);
+          });
+        })
+      : window.confirm('Вы уверены, что хотите удалить эту запись?');
+
+    if (confirmed) {
+      try {
+        await deleteEntry(id);
+        if (webApp) {
+          webApp.HapticFeedback.notificationOccurred('success');
+        }
+      } catch (error) {
+        console.error('Ошибка удаления записи:', error);
+        if (webApp) {
+          webApp.showAlert('Не удалось удалить запись');
+        }
+      }
+    }
+  };
+
+  if (filteredEntries.length === 0) {
+    return (
+      <Card className="text-center py-12">
+        <div className="text-6xl mb-4">📝</div>
+        <h3 className="text-lg font-semibold text-text-primary dark:text-white mb-2">
+          Нет записей
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Создайте первую запись, чтобы начать вести дневник
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {filteredEntries.map((entry) => (
+        <EntryCard
+          key={entry.id}
+          entry={entry}
+          onDelete={handleDelete}
+        />
+      ))}
+    </div>
+  );
+}
+
