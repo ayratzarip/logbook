@@ -11,7 +11,7 @@ export function VideoPlayer() {
     return (
       <Card className="text-center py-12 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowVideo(true)}>
         <div className="text-6xl mb-4">▶️</div>
-        <Button variant="gradient" size="lg" onClick={(e) => {
+        <Button variant="primary" size="lg" onClick={(e) => {
           e.stopPropagation();
           setShowVideo(true);
         }}>

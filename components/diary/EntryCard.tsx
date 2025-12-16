@@ -20,32 +20,24 @@ export function EntryCard({ entry, onDelete }: EntryCardProps) {
     : entry.situationDescription;
 
   return (
-    <Card variant="gradient" className="relative group cursor-pointer hover:shadow-md transition-shadow">
-      {/* Цветная полоска слева */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#3A5BA0] to-[#6EC6F5] rounded-l-2xl" />
-      
-      <Link href={`/entry/${entry.id}`} className="block">
-        <div className="pl-4">
-          {/* Дата и время */}
-          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <span>🕐</span>
-            <span>{formatDateShort(entry.dateTime)}</span>
-          </div>
+    <Card variant="highlight" className="relative cursor-pointer overflow-hidden">
+      <div className="absolute inset-y-0 left-0 w-1 bg-brand-70" />
 
-          {/* Заголовок и превью */}
-          <div>
-            <h3 className="font-semibold text-text-primary dark:text-white mb-1">
-              Ситуация
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-              {preview}
-            </p>
-          </div>
+      <Link href={`/entry/${entry.id}`} className="block space-y-3 pl-4">
+        <div className="flex items-center gap-2 text-caption">
+          <span aria-hidden>🕐</span>
+          <span>{formatDateShort(entry.dateTime)}</span>
+        </div>
+
+        <div>
+          <h3 className="text-h2 text-gray-0 dark:text-gray-100">Ситуация</h3>
+          <p className="text-body text-gray-35 dark:text-gray-90 line-clamp-2">
+            {preview}
+          </p>
         </div>
       </Link>
 
-      {/* Меню действий */}
-      <div className="absolute top-2 right-2">
+      <div className="absolute top-3 right-3">
         <Button
           variant="ghost"
           size="sm"
@@ -59,9 +51,9 @@ export function EntryCard({ entry, onDelete }: EntryCardProps) {
           ⋮
         </Button>
         {showMenu && (
-          <div className="absolute right-0 mt-1 w-32 bg-card-light dark:bg-card-dark rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+          <div className="absolute right-0 mt-2 w-40 rounded-2xl border border-gray-90 bg-gray-100 p-1 shadow-lg dark:border-gray-35 dark:bg-gray-5 z-10">
             <Link href={`/entry/${entry.id}/edit`}>
-              <button className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg">
+              <button className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-gray-35 hover:bg-gray-95 dark:text-gray-90 dark:hover:bg-gray-10">
                 ✏️ Редактировать
               </button>
             </Link>
@@ -73,7 +65,7 @@ export function EntryCard({ entry, onDelete }: EntryCardProps) {
                   onDelete(entry.id);
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
+                className="w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-gray-95 dark:text-red-300 dark:hover:bg-gray-10"
               >
                 🗑️ Удалить
               </button>

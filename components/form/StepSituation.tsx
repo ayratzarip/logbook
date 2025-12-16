@@ -12,7 +12,7 @@ interface StepSituationProps {
 export function StepSituation({ value, onChange, dateTime }: StepSituationProps) {
   return (
     <div className="space-y-4">
-      <div className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-caption">
         Дата и время: {formatDateShort(dateTime)}
       </div>
       <Textarea

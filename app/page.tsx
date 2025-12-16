@@ -17,10 +17,10 @@ export default function Home() {
   }, [loadEntries]);
 
   return (
-    <div className="min-h-screen bg-surface-light dark:bg-surface-dark">
+    <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
       <Header />
       
-      <main className="container mx-auto px-4 py-6 max-w-3xl">
+      <main className="mx-auto max-w-screen-lg px-4 py-6 space-y-6">
         <div className="mb-6">
           <SearchBar />
         </div>
@@ -28,7 +28,7 @@ export default function Home() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="text-2xl mb-2">⏳</div>
-            <p className="text-gray-600 dark:text-gray-400">Загрузка...</p>
+            <p className="text-body">Загрузка...</p>
           </div>
         ) : (
           <EntryList />
@@ -37,7 +37,7 @@ export default function Home() {
         {/* FAB кнопка */}
         <Link href="/entry/new">
           <Button
-            variant="gradient"
+            variant="primary"
             size="lg"
             className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
           >

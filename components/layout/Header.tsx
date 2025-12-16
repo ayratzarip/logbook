@@ -23,16 +23,16 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-gray-200 dark:border-gray-700 bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-sm">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-primary">📔</span>
-          <span className="text-lg font-semibold text-text-primary dark:text-white">
-            Logbook
+    <header className="sticky top-0 z-40 border-b border-gray-90/80 bg-gray-100/90 backdrop-blur-lg dark:border-gray-35/80 dark:bg-gray-5/80">
+      <div className="mx-auto flex h-16 max-w-screen-lg items-center justify-between px-4">
+        <Link href="/" className="flex items-center gap-2 text-h2">
+          <span className="text-2xl" aria-hidden>
+            📔
           </span>
+          <span className="text-gray-0 dark:text-gray-100">Logbook</span>
         </Link>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"

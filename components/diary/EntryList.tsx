@@ -39,12 +39,12 @@ export function EntryList() {
 
   if (filteredEntries.length === 0) {
     return (
-      <Card className="text-center py-12">
-        <div className="text-6xl mb-4">📝</div>
-        <h3 className="text-lg font-semibold text-text-primary dark:text-white mb-2">
-          Нет записей
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <Card className="py-10 text-center">
+        <div className="mb-4 text-5xl" aria-hidden>
+          📝
+        </div>
+        <h3 className="text-h2 text-gray-0 dark:text-gray-100">Нет записей</h3>
+        <p className="mt-2 text-caption">
           Создайте первую запись, чтобы начать вести дневник
         </p>
       </Card>
@@ -52,7 +52,7 @@ export function EntryList() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {filteredEntries.map((entry) => (
         <EntryCard
           key={entry.id}

@@ -229,18 +229,18 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
     <div className="space-y-6">
       {/* Индикатор шага */}
       <div className="text-center">
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-caption">
           Шаг {currentStepIndex + 1} из {FORM_STEPS.length}
         </div>
-        <h2 className="text-xl font-semibold text-text-primary dark:text-white mt-1">
+        <h2 className="text-h1 mt-1">
           {STEP_TITLES[formState.currentStep]}
         </h2>
       </div>
 
       {/* Прогресс бар */}
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div className="w-full bg-gray-90 dark:bg-gray-35 rounded-full h-2">
         <div
-          className="bg-gradient-to-r from-[#3A5BA0] to-[#6EC6F5] h-2 rounded-full transition-all duration-300"
+          className="bg-brand-70 h-2 rounded-full transition-all duration-300"
           style={{ width: `${((currentStepIndex + 1) / FORM_STEPS.length) * 100}%` }}
         />
       </div>
@@ -255,7 +255,7 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
       {/* Кнопки навигации */}
       <div className="flex justify-between gap-4">
         <Button
-          variant="outline"
+          variant="secondary"
           onClick={handleBack}
           disabled={isFirstStep}
         >
@@ -263,14 +263,14 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
         </Button>
         {isLastStep || (formState.currentStep === 'actions' && formState.selectedActionResult === ACTION_RESULT_OPTIONS[0]) ? (
           <Button
-            variant="gradient"
+            variant="primary"
             onClick={handleSave}
           >
             Сохранить
           </Button>
         ) : (
           <Button
-            variant="gradient"
+            variant="primary"
             onClick={handleNext}
           >
             Далее

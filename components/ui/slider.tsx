@@ -33,19 +33,19 @@ export const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
           onChange={(e) => onValueChange?.(Number(e.target.value))}
           className={cn(
             'w-full h-2 appearance-none rounded-lg',
-            'bg-gray-200 dark:bg-gray-700',
+            'bg-gray-90 dark:bg-gray-35',
             'cursor-pointer',
-            'focus:outline-none focus:ring-2 focus:ring-primary',
+            'focus:outline-none focus:ring-2 focus:ring-brand-70',
             className
           )}
           style={{
-            background: `linear-gradient(to right, ${gradientColor} 0%, ${gradientColor} ${percentage}%, rgb(229 231 235) ${percentage}%, rgb(229 231 235) 100%)`,
+            background: `linear-gradient(to right, ${gradientColor} 0%, ${gradientColor} ${percentage}%, var(--gray-90) ${percentage}%, var(--gray-90) 100%)`,
           }}
           {...props}
         />
-        <div className="flex justify-between mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex justify-between mt-1 text-caption">
           <span>{min}</span>
-          <span className="font-semibold text-primary">{value}</span>
+          <span className="font-semibold text-brand-70">{value}</span>
           <span>{max}</span>
         </div>
       </div>

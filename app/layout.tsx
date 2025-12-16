@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { TelegramProvider } from "@/components/providers/TelegramProvider";
 import { PWAProvider } from "@/components/providers/PWAProvider";
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin", "cyrillic"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -61,7 +61,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${nunito.variable} font-sans antialiased bg-surface-light dark:bg-surface-dark text-text-primary dark:text-white`}
+        className={`${inter.variable} min-h-screen bg-gray-95 dark:bg-brand-10 text-gray-0 dark:text-gray-100`}
       >
         <PWAProvider>
           <TelegramProvider>

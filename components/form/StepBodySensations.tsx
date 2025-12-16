@@ -19,7 +19,7 @@ export function StepBodySensations({
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-text-primary dark:text-white mb-2">
+        <label className="block text-body font-medium mb-2">
           Интенсивность ощущений (0-10)
         </label>
         <Slider

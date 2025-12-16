@@ -50,7 +50,7 @@ export const Dialog: React.FC<DialogProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <h2 className="text-xl font-semibold text-text-primary dark:text-white mb-2">
+          <h2 className="text-h1 text-gray-0 dark:text-gray-100 mb-2">
             {title}
           </h2>
         )}

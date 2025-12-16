@@ -12,10 +12,10 @@ export function IconCard({ icon, title, description }: IconCardProps) {
   return (
     <Card className="text-center p-6">
       <div className="text-4xl mb-3">{icon}</div>
-      <h3 className="font-semibold text-text-primary dark:text-white mb-2">
+      <h3 className="text-h2 text-gray-0 dark:text-gray-100 mb-2">
         {title}
       </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-caption">
         {description}
       </p>
     </Card>

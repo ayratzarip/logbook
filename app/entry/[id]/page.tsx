@@ -47,12 +47,12 @@ export default function EntryDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-surface-light dark:bg-surface-dark">
+      <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
         <Header />
         <div className="container mx-auto px-4 py-12 max-w-3xl">
           <div className="text-center">
             <div className="text-2xl mb-2">⏳</div>
-            <p className="text-gray-600 dark:text-gray-400">Загрузка...</p>
+            <p className="text-body">Загрузка...</p>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function EntryDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-light dark:bg-surface-dark">
+    <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
       <Header />
       
       <main className="container mx-auto px-4 py-6 max-w-3xl">
@@ -73,7 +73,7 @@ export default function EntryDetailPage() {
         {/* FAB кнопка редактирования */}
         <Link href={`/entry/${entry.id}/edit`}>
           <Button
-            variant="gradient"
+            variant="primary"
             size="lg"
             className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
           >

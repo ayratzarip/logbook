@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function InstructionsPage() {
   return (
-    <div className="min-h-screen bg-surface-light dark:bg-surface-dark">
+    <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
       <Header />
       
       <main className="container mx-auto px-4 py-6 max-w-3xl space-y-8">

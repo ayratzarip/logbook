@@ -8,13 +8,13 @@ interface InstructionRowProps {
 
 export function InstructionRow({ icon, title, description }: InstructionRowProps) {
   return (
-    <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+    <div className="flex items-start space-x-4 p-4 rounded-xl bg-gray-100 dark:bg-gray-5 border border-gray-90 dark:border-gray-35">
       <div className="text-3xl flex-shrink-0">{icon}</div>
       <div>
-        <h3 className="font-semibold text-text-primary dark:text-white mb-1">
+        <h3 className="text-h2 text-gray-0 dark:text-gray-100 mb-1">
           {title}
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-caption">
           {description}
         </p>
       </div>

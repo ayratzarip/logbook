@@ -1,58 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  
-  /* Custom colors */
-  --primary: #3A5BA0;
-  --primary-light: #6EC6F5;
-  --surface-light: #F6F8FB;
-  --surface-dark: #181C24;
-  --card-light: #FFFFFF;
-  --card-dark: #232A3B;
-  --text-primary: #222B45;
-  --text-secondary: #172554;
-  --text-muted: #B0B8C1;
-}
+  --gray-100: #ffffff;
+  --gray-95: #f5f7fb;
+  --gray-90: #e7ecf5;
+  --gray-85: #d8deeb;
+  --gray-60: #7c8294;
+  --gray-35: #303548;
+  --gray-10: #181c24;
+  --gray-5: #11141c;
+  --gray-0: #05070a;
 
-.dark {
-  --background: #181C24;
-  --foreground: #ededed;
+  --brand-10: #0d1c38;
+  --brand-30: #1f3d85;
+  --brand-70: #3b6dff;
+  --brand-90: #90acff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  /* Primary colors */
-  --color-primary: var(--primary);
-  --color-primary-light: var(--primary-light);
-  
-  /* Surface colors */
-  --color-surface-light: var(--surface-light);
-  --color-surface-dark: var(--surface-dark);
-  
-  /* Card colors */
-  --color-card-light: var(--card-light);
-  --color-card-dark: var(--card-dark);
-  
-  /* Text colors */
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
+  --color-gray-0: var(--gray-0);
+  --color-gray-5: var(--gray-5);
+  --color-gray-10: var(--gray-10);
+  --color-gray-35: var(--gray-35);
+  --color-gray-60: var(--gray-60);
+  --color-gray-85: var(--gray-85);
+  --color-gray-90: var(--gray-90);
+  --color-gray-95: var(--gray-95);
+  --color-gray-100: var(--gray-100);
+
+  --color-brand-10: var(--brand-10);
+  --color-brand-30: var(--brand-30);
+  --color-brand-70: var(--brand-70);
+  --color-brand-90: var(--brand-90);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-nunito), 'Nunito', Arial, Helvetica, sans-serif;
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--gray-95);
+    color: var(--gray-0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark body {
+    background-color: var(--brand-10);
+    color: var(--gray-100);
+  }
 }
 
-/* Telegram Web App стили */
-html {
-  --telegram-bg-color: var(--background);
-  --telegram-text-color: var(--foreground);
+@layer components {
+  .text-h1 {
+    @apply text-[1.125rem] font-semibold leading-tight text-gray-0;
+  }
+
+  .text-h2 {
+    @apply text-base font-semibold leading-tight text-gray-0;
+  }
+
+  .text-body {
+    @apply text-base font-normal text-gray-35 dark:text-gray-90;
+  }
+
+  .text-caption {
+    @apply text-sm font-normal text-gray-60;
+  }
+
+  .card {
+    @apply rounded-xl p-5 bg-gray-100 dark:bg-gray-5 shadow-sm;
+  }
+
+  .card-lg {
+    @apply rounded-2xl p-6 bg-gray-100 dark:bg-gray-5 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand-70 px-5 text-base font-semibold text-white transition-all active:scale-95 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-70/30;
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-12 items-center justify-center rounded-2xl bg-gray-90 px-5 text-base font-semibold text-gray-0 dark:bg-gray-35 dark:text-gray-100 transition-all active:scale-95 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-gray-60/30;
+  }
+
+  .input {
+    @apply w-full rounded-2xl border border-gray-85 bg-gray-100 px-4 py-3 text-base text-gray-35 placeholder:text-gray-60 focus:border-brand-70 focus:outline-none focus:ring-2 focus:ring-brand-70/40 dark:border-gray-35 dark:bg-gray-5 dark:text-gray-90 dark:placeholder:text-gray-60;
+  }
+
+  .list-item {
+    @apply flex items-center justify-between border-b border-gray-90 last:border-b-0 py-4;
+  }
 }

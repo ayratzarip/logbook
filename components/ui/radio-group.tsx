@@ -44,23 +44,31 @@ export const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemP
       <label
         className={cn(
           'flex items-center space-x-3 p-3 rounded-xl cursor-pointer',
-          'border-2 transition-colors',
+          'border transition-colors',
           checked
-            ? 'border-primary bg-primary/10 dark:bg-primary/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-primary/50',
+            ? 'border-brand-70 bg-brand-70/10 dark:bg-brand-70/20'
+            : 'border-gray-85 dark:border-gray-35 hover:border-brand-70/50',
           className
         )}
       >
+        <div
+          className={cn(
+            "flex h-5 w-5 items-center justify-center rounded-full border border-gray-60",
+            checked && "border-brand-70 bg-brand-70"
+          )}
+        >
+          {checked && <div className="h-2.5 w-2.5 rounded-full bg-white" />}
+        </div>
         <input
           ref={ref}
           type="radio"
           value={value}
           checked={checked}
           onChange={() => onValueChange?.(value)}
-          className="w-4 h-4 text-primary focus:ring-primary focus:ring-2"
+          className="sr-only"
           {...props}
         />
-        <span className="text-sm text-text-primary dark:text-white font-medium">
+        <span className="text-body font-medium">
           {label}
         </span>
       </label>
