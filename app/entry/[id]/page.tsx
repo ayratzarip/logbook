@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
+import { BottomNav } from '@/components/layout/BottomNav';
 import { EntryDetail } from '@/components/diary/EntryDetail';
 import { Button } from '@/components/ui/button';
 import { DiaryEntry } from '@/lib/types/diary';
@@ -47,14 +48,15 @@ export default function EntryDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
-        <Header />
+      <div className="min-h-screen bg-gray-95 dark:bg-brand-10 pb-20">
+        <Header title="Запись" showExport={false} showAddToHome={false} />
         <div className="container mx-auto px-4 py-12 max-w-3xl">
           <div className="text-center">
             <div className="text-2xl mb-2">⏳</div>
             <p className="text-body">Загрузка...</p>
           </div>
         </div>
+        <BottomNav />
       </div>
     );
   }
@@ -64,24 +66,24 @@ export default function EntryDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
-      <Header />
+    <div className="min-h-screen bg-gray-95 dark:bg-brand-10 pb-20">
+      <Header title="Запись" showExport={false} showAddToHome={false} />
       
-      <main className="container mx-auto px-4 py-6 max-w-3xl">
+      <main className="container mx-auto px-4 py-4 max-w-3xl">
         <EntryDetail entry={entry} />
 
-        {/* FAB кнопка редактирования */}
-        <Link href={`/entry/${entry.id}/edit`}>
-          <Button
-            variant="primary"
-            size="lg"
-            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
-          >
-            ✏️
-          </Button>
-        </Link>
+        {/* Кнопка редактирования */}
+        <div className="mt-6 flex justify-center">
+          <Link href={`/entry/${entry.id}/edit`}>
+            <Button variant="secondary" className="gap-2">
+              <span aria-hidden>✏️</span>
+              Редактировать
+            </Button>
+          </Link>
+        </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 }
-

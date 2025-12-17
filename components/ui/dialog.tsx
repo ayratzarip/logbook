@@ -37,14 +37,14 @@ export const Dialog: React.FC<DialogProps> = ({
       onClick={() => onOpenChange(false)}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/60" />
       
       {/* Dialog */}
       <div
         className={cn(
           'relative z-50 w-full max-w-md mx-4',
-          'bg-card-light dark:bg-card-dark',
-          'rounded-2xl shadow-lg',
+          'bg-gray-100 dark:bg-gray-5',
+          'rounded-2xl shadow-xl',
           'p-6'
         )}
         onClick={(e) => e.stopPropagation()}

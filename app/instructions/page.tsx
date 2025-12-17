@@ -1,6 +1,7 @@
 'use client';
 
 import { Header } from '@/components/layout/Header';
+import { BottomNav } from '@/components/layout/BottomNav';
 import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 
@@ -31,10 +32,10 @@ function InstructionItem({ title, summary, children }: { title: string, summary:
 
 export default function InstructionsPage() {
   return (
-    <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
-      <Header />
+    <div className="min-h-screen bg-gray-95 dark:bg-brand-10 pb-20">
+      <Header title="Инструкции" showExport={false} showAddToHome={false} />
       
-      <main className="container mx-auto px-4 py-6 max-w-3xl space-y-8 pb-20">
+      <main className="container mx-auto px-4 py-4 max-w-3xl space-y-6">
         <section>
           <InstructionItem
             title="Для чего нужен журнал самонаблюдения"
@@ -62,7 +63,6 @@ export default function InstructionsPage() {
                 <li>Во время каждого неудачного социального взаимодействия.</li>
                 <li>После каждого эффективного социального взаимодействия.</li>
                 <li>Когда Вы движетесь к цели, то при выполнении каждого шага.</li>
-                <li>Во время выполнения упражнений из проекта.</li>
             </ul>
           </InstructionItem>
         </section>
@@ -182,6 +182,8 @@ export default function InstructionsPage() {
           </InstructionItem>
         </section>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

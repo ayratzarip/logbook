@@ -1,13 +1,31 @@
 'use client';
 
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { exportToCsv } from '@/lib/utils/csv-export';
 import { useDiaryStore } from '@/lib/store/diary-store';
 import { getTelegramWebApp } from '@/lib/utils/telegram';
 
-export function Header() {
+interface HeaderProps {
+  title?: string;
+  showExport?: boolean;
+  showAddToHome?: boolean;
+}
+
+export function Header({ title = 'Записи', showExport = true, showAddToHome = true }: HeaderProps) {
   const entries = useDiaryStore((state) => state.entries);
+  const [canAddToHome, setCanAddToHome] = useState(false);
+
+  useEffect(() => {
+    if (showAddToHome) {
+      const webApp = getTelegramWebApp();
+      if (webApp?.addToHomeScreen && webApp?.checkHomeScreenStatus) {
+        webApp.checkHomeScreenStatus((status) => {
+          setCanAddToHome(status !== 'added');
+        });
+      }
+    }
+  }, [showAddToHome]);
 
   const handleExport = () => {
     if (entries.length === 0) {
@@ -22,34 +40,51 @@ export function Header() {
     exportToCsv(entries);
   };
 
-  return (
-    <header className="sticky top-0 z-40 border-b border-gray-90/80 bg-gray-100/90 backdrop-blur-lg dark:border-gray-35/80 dark:bg-gray-5/80">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 text-h2">
-          <span className="text-2xl" aria-hidden>
-            📔
-          </span>
-          <span className="text-gray-0 dark:text-gray-100">Записи</span>
-        </Link>
+  const handleAddToHomeScreen = () => {
+    const webApp = getTelegramWebApp();
+    if (webApp?.addToHomeScreen) {
+      webApp.HapticFeedback.impactOccurred('light');
+      webApp.addToHomeScreen();
+      setCanAddToHome(false);
+    }
+  };
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleExport}
-            title="Экспорт в CSV"
-          >
-            ⬇️
-          </Button>
-          <Link href="/instructions">
+  return (
+    <header className="sticky top-0 z-40 border-b border-gray-90/80 bg-gray-100/95 backdrop-blur-lg dark:border-gray-35/80 dark:bg-gray-5/95">
+      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+        {/* Левая часть - Добавить на экран */}
+        <div className="flex items-center">
+          {showAddToHome && canAddToHome && (
             <Button
               variant="ghost"
               size="sm"
-              title="Инструкции"
+              onClick={handleAddToHomeScreen}
+              title="Добавить на главный экран"
+              className="gap-1"
             >
-              ❓
+              <span aria-hidden>🏠</span>
+              <span className="text-xs">На экран</span>
             </Button>
-          </Link>
+          )}
+        </div>
+
+        {/* Центр - Заголовок */}
+        <h1 className="text-h2 text-gray-0 dark:text-gray-100 absolute left-1/2 -translate-x-1/2">
+          {title}
+        </h1>
+
+        {/* Правая часть - Экспорт */}
+        <div className="flex items-center">
+          {showExport && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExport}
+              title="Экспорт в CSV"
+            >
+              <span aria-hidden>⬇️</span>
+            </Button>
+          )}
         </div>
       </div>
     </header>
