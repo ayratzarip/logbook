@@ -23,10 +23,14 @@ export function EntryDetailPageClient() {
         // Ждем готовности Telegram WebApp
         await waitForTelegramWebApp(3000);
         
+        // Небольшая задержка для гарантии полной инициализации CloudStorage
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const loadedEntry = await telegramStorageService.getEntry(params.id as string);
         if (loadedEntry) {
           setEntry(loadedEntry);
         } else {
+          // Если запись не найдена, показываем сообщение и возвращаемся на главную
           const webApp = getTelegramWebApp();
           if (webApp) {
             webApp.showAlert('Запись не найдена', () => {
@@ -39,13 +43,18 @@ export function EntryDetailPageClient() {
         }
       } catch (error) {
         console.error('Ошибка загрузки записи:', error);
+        // При ошибке также возвращаемся на главную
+        router.push('/');
       } finally {
         setIsLoading(false);
       }
     }
 
-    if (params.id) {
+    if (params.id && params.id !== 'placeholder') {
       loadEntry();
+    } else if (params.id === 'placeholder') {
+      // Если это placeholder ID, сразу возвращаемся на главную
+      router.push('/');
     }
   }, [params.id, router]);
 

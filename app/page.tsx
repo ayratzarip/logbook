@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -13,14 +13,20 @@ export default function Home() {
   const router = useRouter();
   const loadEntries = useDiaryStore((state) => state.loadEntries);
   const isLoading = useDiaryStore((state) => state.isLoading);
-  const [isTelegramReady, setIsTelegramReady] = useState(false);
 
   useEffect(() => {
     // Обработка редиректа от 404.html (GitHub Pages SPA)
     const redirectPath = sessionStorage.getItem('redirectPath');
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath');
-      router.replace(redirectPath);
+      // Используем небольшую задержку, чтобы Next.js успел инициализироваться
+      // Затем используем router.push для клиентского роутинга
+      setTimeout(() => {
+        // Используем History API для изменения URL без перезагрузки
+        window.history.replaceState({}, '', redirectPath);
+        // Затем используем router.push для инициализации страницы
+        router.push(redirectPath);
+      }, 200);
       return;
     }
 
@@ -28,7 +34,11 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const pathParam = params.get('p');
     if (pathParam) {
-      router.replace('/' + decodeURIComponent(pathParam));
+      const fullPath = '/' + decodeURIComponent(pathParam);
+      setTimeout(() => {
+        window.history.replaceState({}, '', fullPath);
+        router.push(fullPath);
+      }, 200);
       return;
     }
 
@@ -37,7 +47,6 @@ export default function Home() {
         // Ждем готовности Telegram WebApp перед загрузкой данных
         // Это особенно важно для CloudStorage, который может быть недоступен сразу
         await waitForTelegramWebApp(3000);
-        setIsTelegramReady(true);
         
         // Небольшая задержка для гарантии полной инициализации CloudStorage
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -47,7 +56,6 @@ export default function Home() {
       } catch (error) {
         console.error('[Home] Ошибка инициализации:', error);
         // Продолжаем работу даже при ошибке
-        setIsTelegramReady(true);
         loadEntries();
       }
     }

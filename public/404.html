@@ -5,8 +5,7 @@
   <title>Soft Skills Engine: Logbook</title>
   <script>
     // GitHub Pages SPA redirect
-    // Сохраняем путь и редиректим на главную страницу
-    // Приложение потом обработает редирект
+    // Загружаем index.html и используем History API для изменения URL
     (function() {
       var basePath = '/logbook';
       var l = window.location;
@@ -17,13 +16,17 @@
         pathname = pathname.substring(basePath.length);
       }
       
-      // Сохраняем путь для восстановления
-      if (pathname && pathname !== '/') {
+      // Если это не главная страница, загружаем index.html
+      if (pathname && pathname !== '/' && pathname !== '/index.html') {
+        // Сохраняем путь для восстановления после загрузки
         sessionStorage.setItem('redirectPath', pathname + l.search + l.hash);
+        
+        // Загружаем index.html
+        l.replace(basePath + '/index.html');
+      } else {
+        // Если это главная страница, просто редиректим
+        l.replace(basePath + '/');
       }
-      
-      // Редиректим на главную страницу
-      l.replace(basePath + '/');
     })();
   </script>
 </head>
