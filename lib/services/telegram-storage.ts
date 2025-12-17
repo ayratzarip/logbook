@@ -3,6 +3,33 @@ import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY = 'diary_entries';
 
+function sanitizeEntry(raw: unknown): DiaryEntry | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const entry = raw as Partial<DiaryEntry>;
+  
+  if (typeof entry.id !== 'string') return null;
+
+  const ensureString = (value: unknown) => (typeof value === 'string' ? value : '');
+
+  return {
+    id: entry.id,
+    dateTime: typeof entry.dateTime === 'string' ? entry.dateTime : new Date().toISOString(),
+    situationDescription: ensureString(entry.situationDescription),
+    attentionFocus: ensureString(entry.attentionFocus),
+    thoughts: ensureString(entry.thoughts),
+    bodySensations: ensureString(entry.bodySensations),
+    actions: ensureString(entry.actions),
+    futureActions: ensureString(entry.futureActions),
+  };
+}
+
+function sanitizeEntries(raw: unknown): DiaryEntry[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map(sanitizeEntry)
+    .filter((entry): entry is DiaryEntry => entry !== null);
+}
+
 // Получить Telegram WebApp API
 function getTelegramWebApp() {
   if (typeof window === 'undefined') return null;
@@ -38,7 +65,7 @@ export const telegramStorageService = {
         try {
           const data = localStorage.getItem(STORAGE_KEY);
           if (!data) return [];
-          const entries = JSON.parse(data) as DiaryEntry[];
+          const entries = sanitizeEntries(JSON.parse(data));
           return entries.sort((a, b) => 
             new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
           );
@@ -62,7 +89,7 @@ export const telegramStorageService = {
 
       if (!data) return [];
       
-      const entries = JSON.parse(data) as DiaryEntry[];
+      const entries = sanitizeEntries(JSON.parse(data));
       return entries.sort((a, b) => 
         new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
       );
@@ -72,7 +99,7 @@ export const telegramStorageService = {
       try {
         const data = localStorage.getItem(STORAGE_KEY);
         if (!data) return [];
-        const entries = JSON.parse(data) as DiaryEntry[];
+        const entries = sanitizeEntries(JSON.parse(data));
         return entries.sort((a, b) => 
           new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
         );
@@ -116,12 +143,12 @@ export const telegramStorageService = {
     const entries = await this.getAllEntries();
     const lowerQuery = query.toLowerCase();
     return entries.filter(entry => 
-      (entry.situationDescription || '').toLowerCase().includes(lowerQuery) ||
-      (entry.attentionFocus || '').toLowerCase().includes(lowerQuery) ||
-      (entry.thoughts || '').toLowerCase().includes(lowerQuery) ||
-      (entry.bodySensations || '').toLowerCase().includes(lowerQuery) ||
-      (entry.actions || '').toLowerCase().includes(lowerQuery) ||
-      (entry.futureActions || '').toLowerCase().includes(lowerQuery)
+      entry.situationDescription.toLowerCase().includes(lowerQuery) ||
+      entry.attentionFocus.toLowerCase().includes(lowerQuery) ||
+      entry.thoughts.toLowerCase().includes(lowerQuery) ||
+      entry.bodySensations.toLowerCase().includes(lowerQuery) ||
+      entry.actions.toLowerCase().includes(lowerQuery) ||
+      entry.futureActions.toLowerCase().includes(lowerQuery)
     );
   },
 
