@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:gh-pages": "GITHUB_PAGES=true next build",
+    "export": "npm run build:gh-pages",
+    "deploy": "npm run build:gh-pages && gh-pages -d out -t true"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
@@ -26,6 +29,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "gh-pages": "^6.3.0",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4",
