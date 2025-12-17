@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { TelegramProvider } from "@/components/providers/TelegramProvider";
 import { PWAProvider } from "@/components/providers/PWAProvider";
+import { ErudaProvider } from "@/components/providers/ErudaProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -62,6 +63,7 @@ export default function RootLayout({
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
+        <ErudaProvider />
         <PWAProvider>
           <TelegramProvider>
             {children}
