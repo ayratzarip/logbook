@@ -116,12 +116,12 @@ export const telegramStorageService = {
     const entries = await this.getAllEntries();
     const lowerQuery = query.toLowerCase();
     return entries.filter(entry => 
-      entry.situationDescription.toLowerCase().includes(lowerQuery) ||
-      entry.attentionFocus.toLowerCase().includes(lowerQuery) ||
-      entry.thoughts.toLowerCase().includes(lowerQuery) ||
-      entry.bodySensations.toLowerCase().includes(lowerQuery) ||
-      entry.actions.toLowerCase().includes(lowerQuery) ||
-      entry.futureActions.toLowerCase().includes(lowerQuery)
+      (entry.situationDescription || '').toLowerCase().includes(lowerQuery) ||
+      (entry.attentionFocus || '').toLowerCase().includes(lowerQuery) ||
+      (entry.thoughts || '').toLowerCase().includes(lowerQuery) ||
+      (entry.bodySensations || '').toLowerCase().includes(lowerQuery) ||
+      (entry.actions || '').toLowerCase().includes(lowerQuery) ||
+      (entry.futureActions || '').toLowerCase().includes(lowerQuery)
     );
   },
 

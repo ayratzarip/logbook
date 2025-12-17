@@ -198,9 +198,9 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
   const handleNext = () => {
     if (!validateStep(formState.currentStep)) {
       const webApp = getTelegramWebApp();
-      if (webApp) {
+      if (webApp && typeof webApp.showAlert === 'function') {
         webApp.showAlert('Пожалуйста, заполните обязательные поля');
-        webApp.HapticFeedback.notificationOccurred('error');
+        webApp.HapticFeedback?.notificationOccurred?.('error');
       } else {
         alert('Пожалуйста, заполните обязательные поля');
       }
@@ -236,7 +236,7 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
   const handleSave = async () => {
     if (!validateStep(formState.currentStep)) {
       const webApp = getTelegramWebApp();
-      if (webApp) {
+      if (webApp && typeof webApp.showAlert === 'function') {
         webApp.showAlert('Пожалуйста, заполните обязательные поля');
       } else {
         alert('Пожалуйста, заполните обязательные поля');
@@ -254,8 +254,8 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
       }
 
       const webApp = getTelegramWebApp();
-      if (webApp) {
-        webApp.HapticFeedback.notificationOccurred('success');
+      if (webApp && typeof webApp.showAlert === 'function') {
+        webApp.HapticFeedback?.notificationOccurred?.('success');
         webApp.showAlert(initialEntry ? 'Запись обновлена' : 'Запись сохранена', () => {
           router.push('/');
         });
@@ -266,9 +266,9 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
     } catch (error) {
       console.error('Ошибка сохранения:', error);
       const webApp = getTelegramWebApp();
-      if (webApp) {
+      if (webApp && typeof webApp.showAlert === 'function') {
         webApp.showAlert('Не удалось сохранить запись');
-        webApp.HapticFeedback.notificationOccurred('error');
+        webApp.HapticFeedback?.notificationOccurred?.('error');
       } else {
         alert('Не удалось сохранить запись');
       }

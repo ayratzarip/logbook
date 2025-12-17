@@ -14,7 +14,7 @@ export function EntryList() {
   const handleDelete = async (id: string) => {
     const webApp = getTelegramWebApp();
     
-    const confirmed = webApp
+    const confirmed = webApp && typeof webApp.showConfirm === 'function'
       ? await new Promise<boolean>((resolve) => {
           webApp.showConfirm('Вы уверены, что хотите удалить эту запись?', (confirmed) => {
             resolve(confirmed);
@@ -25,13 +25,15 @@ export function EntryList() {
     if (confirmed) {
       try {
         await deleteEntry(id);
-        if (webApp) {
+        if (webApp?.HapticFeedback?.notificationOccurred) {
           webApp.HapticFeedback.notificationOccurred('success');
         }
       } catch (error) {
         console.error('Ошибка удаления записи:', error);
-        if (webApp) {
+        if (webApp && typeof webApp.showAlert === 'function') {
           webApp.showAlert('Не удалось удалить запись');
+        } else {
+          alert('Не удалось удалить запись');
         }
       }
     }
