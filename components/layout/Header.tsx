@@ -51,39 +51,37 @@ export function Header({ title = 'Записи', showExport = true, showAddToHom
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-90/80 bg-gray-100/95 backdrop-blur-lg dark:border-gray-35/80 dark:bg-gray-5/95">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        {/* Левая часть - Добавить на экран */}
-        <div className="flex items-center">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
+        {/* Левая часть - Добавить ярлык */}
+        <div className="flex items-center min-w-[80px]">
           {showAddToHome && canAddToHome && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={handleAddToHomeScreen}
+              className="flex flex-col items-center gap-0.5 py-1 px-2 transition-colors"
               title="Добавить на главный экран"
-              className="gap-1"
             >
-              <span aria-hidden>🏠</span>
-              <span className="text-xs">На экран</span>
-            </Button>
+              <span className="text-xl" aria-hidden>📲</span>
+              <span className="text-[10px] text-gray-60 whitespace-nowrap">Добавить ярлык</span>
+            </button>
           )}
         </div>
 
         {/* Центр - Заголовок */}
-        <h1 className="text-h2 text-gray-0 dark:text-gray-100 absolute left-1/2 -translate-x-1/2">
+        <h1 className="text-h2 text-gray-0 dark:text-gray-100">
           {title}
         </h1>
 
-        {/* Правая часть - Экспорт */}
-        <div className="flex items-center">
+        {/* Правая часть - Скачать */}
+        <div className="flex items-center min-w-[80px] justify-end">
           {showExport && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={handleExport}
+              className="flex flex-col items-center gap-0.5 py-1 px-2 transition-colors"
               title="Экспорт в CSV"
             >
-              <span aria-hidden>⬇️</span>
-            </Button>
+              <span className="text-xl" aria-hidden>⬇️</span>
+              <span className="text-[10px] text-gray-60">Скачать</span>
+            </button>
           )}
         </div>
       </div>
