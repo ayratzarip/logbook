@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Soft Skills Engine: Logbook</title>
+  <script>
+    // GitHub Pages SPA redirect
+    // Сохраняем путь и редиректим на главную страницу
+    // Приложение потом обработает редирект
+    (function() {
+      var basePath = '/logbook';
+      var l = window.location;
+      
+      // Получаем путь после basePath
+      var pathname = l.pathname;
+      if (pathname.startsWith(basePath)) {
+        pathname = pathname.substring(basePath.length);
+      }
+      
+      // Сохраняем путь для восстановления
+      if (pathname && pathname !== '/') {
+        sessionStorage.setItem('redirectPath', pathname + l.search + l.hash);
+      }
+      
+      // Редиректим на главную страницу
+      l.replace(basePath + '/');
+    })();
+  </script>
+</head>
+<body>
+  <p>Перенаправление...</p>
+</body>
+</html>

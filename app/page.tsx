@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { SearchBar } from '@/components/diary/SearchBar';
@@ -9,11 +10,28 @@ import { useDiaryStore } from '@/lib/store/diary-store';
 import { waitForTelegramWebApp } from '@/lib/utils/telegram';
 
 export default function Home() {
+  const router = useRouter();
   const loadEntries = useDiaryStore((state) => state.loadEntries);
   const isLoading = useDiaryStore((state) => state.isLoading);
   const [isTelegramReady, setIsTelegramReady] = useState(false);
 
   useEffect(() => {
+    // Обработка редиректа от 404.html (GitHub Pages SPA)
+    const redirectPath = sessionStorage.getItem('redirectPath');
+    if (redirectPath) {
+      sessionStorage.removeItem('redirectPath');
+      router.replace(redirectPath);
+      return;
+    }
+
+    // Также проверяем URL параметр (альтернативный способ редиректа)
+    const params = new URLSearchParams(window.location.search);
+    const pathParam = params.get('p');
+    if (pathParam) {
+      router.replace('/' + decodeURIComponent(pathParam));
+      return;
+    }
+
     async function initializeAndLoad() {
       try {
         // Ждем готовности Telegram WebApp перед загрузкой данных
@@ -35,7 +53,7 @@ export default function Home() {
     }
 
     initializeAndLoad();
-  }, [loadEntries]);
+  }, [loadEntries, router]);
 
   return (
     <div className="min-h-screen bg-gray-95 dark:bg-brand-10 pb-20">
