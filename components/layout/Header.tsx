@@ -24,7 +24,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-90/80 bg-gray-100/90 backdrop-blur-lg dark:border-gray-35/80 dark:bg-gray-5/80">
-      <div className="mx-auto flex h-16 max-w-screen-lg items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 text-h2">
           <span className="text-2xl" aria-hidden>
             📔

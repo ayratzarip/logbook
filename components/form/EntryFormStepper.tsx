@@ -6,6 +6,7 @@ import { FormState, FormStep, DiaryEntry } from '@/lib/types/diary';
 import { FORM_STEPS, STEP_TITLES, ACTION_RESULT_OPTIONS } from '@/lib/constants/form-options';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { StepSituation } from './StepSituation';
 import { StepAttention } from './StepAttention';
 import { StepThoughts } from './StepThoughts';
@@ -16,6 +17,108 @@ import { formStateToEntry } from '@/lib/utils/form-parser';
 import { useDiaryStore } from '@/lib/store/diary-store';
 import { getTelegramWebApp } from '@/lib/utils/telegram';
 
+// Подсказки для каждого шага формы
+const STEP_HINTS: Record<FormStep, { title: string; content: React.ReactNode }> = {
+  situation: {
+    title: 'Описание ситуации',
+    content: (
+      <div className="space-y-3 text-sm">
+        <p>Старайтесь записывать максимально кратко. Если писать подробно, то, во-первых, Вы быстрее устанете, во-вторых, удобнее анализировать схематичные записи.</p>
+        <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
+          <p className="font-semibold mb-2">Примеры:</p>
+          <p><strong>Неуспех:</strong> Первый день в Инфотехлаб. Вхожу в офис.</p>
+          <p><strong>Успех:</strong> Первое свидание с Ксюшей. В кафе Лакомка.</p>
+        </div>
+      </div>
+    ),
+  },
+  attention: {
+    title: 'Фокус внимания',
+    content: (
+      <div className="space-y-3 text-sm">
+        <p>В зависимости от того, куда направлено внимание, будут развиваться дальнейшие процессы в голове и в теле.</p>
+        <p className="font-semibold">Куда может быть направлено внимание:</p>
+        <ul className="list-decimal pl-5 space-y-1">
+          <li><strong>На зрительном образе</strong> (увидели мятую рубашку, или как вьются волосы).</li>
+          <li><strong>На звуках</strong> (шум кондиционера, тембр голоса).</li>
+          <li><strong>На смысле</strong> (слушаете коллегу про столовую).</li>
+          <li><strong>На ощущениях тела</strong> (проверяете не покраснели ли вы).</li>
+          <li><strong>Погружен в мысли</strong> (оперируете выдуманными вещами).</li>
+          <li><strong>Внимание скачет</strong> (хаос в голове, «бегающий взгляд»).</li>
+          <li><strong>Внимание рассеянно</strong> (полусон, отключение).</li>
+        </ul>
+        <p className="text-xs italic">Первые три варианта считаются оптимальными.</p>
+      </div>
+    ),
+  },
+  thoughts: {
+    title: 'Мысли',
+    content: (
+      <div className="space-y-3 text-sm">
+        <p>Мысли – это когнитивные процессы, скрытые от внешнего наблюдателя. Если сложно выявить мысли, запишите самое логичное или представьте «облачко» над головой персонажа.</p>
+        <p className="font-semibold">Виды мыслей:</p>
+        <ul className="list-decimal pl-5 space-y-1">
+          <li><strong>Тревожные мысли о будущем</strong> – «А вдруг...»</li>
+          <li><strong>Переживания прошлого</strong> – вспышки воспоминаний.</li>
+          <li><strong>Сожаления о прошлом</strong> – «Ах, если бы...»</li>
+          <li><strong>Ожидания оценки</strong> – «Какой я?», «Как они подумали?»</li>
+          <li><strong>Установки</strong> – «Я должен», глубинные правила.</li>
+          <li><strong>Перегрузка планированием</strong> – попытка всё спрогнозировать.</li>
+          <li><strong>Мыслил «линейно»</strong> – поглощён одной идеей (к этому стремимся).</li>
+        </ul>
+      </div>
+    ),
+  },
+  bodySensations: {
+    title: 'Телесные ощущения',
+    content: (
+      <div className="space-y-3 text-sm">
+        <p>Биологический смысл — подготовка к действию (убежать, напасть). Нужно подготовить тело: тонус мышц, глюкоза, кислород.</p>
+        <p className="font-semibold">Как описать телесные ощущения:</p>
+        <ul className="list-decimal pl-5 space-y-1">
+          <li>Быстро сканируем мышцы тела (стопы, лоб, пресс, шея, лицо).</li>
+          <li>Оцениваем сердцебиение.</li>
+          <li>Оцениваем дыхание.</li>
+          <li>Ощущения в животе и малом тазу.</li>
+          <li>Кожа (жарко, холодно, пот).</li>
+        </ul>
+        <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-md mt-2">
+          <p className="font-semibold mb-1">Пример:</p>
+          <p>Весь напрягся, сердце стучало, покраснело лицо, вспотел.</p>
+        </div>
+      </div>
+    ),
+  },
+  actions: {
+    title: 'Ваши действия и результат',
+    content: (
+      <div className="space-y-3 text-sm">
+        <p>Оцениваем правильность действий по результату, а не по абстрактным правилам. Если результат получен — действие эффективно.</p>
+        <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
+          <p className="font-semibold mb-2">Примеры:</p>
+          <p><strong>Неуспех:</strong> Молча подошёл к своему столу и сел.</p>
+          <p><strong>Успех:</strong> Слушал её, рассказал историю про свою собаку.</p>
+        </div>
+      </div>
+    ),
+  },
+  futureActions: {
+    title: 'Что делать в будущем?',
+    content: (
+      <div className="space-y-3 text-sm">
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Если не знаете, как поступать — нажимаем «Не знаю». Позже это обсудим.</li>
+          <li>Если знаете — записываете план действий.</li>
+        </ul>
+        <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
+          <p className="font-semibold mb-1">Пример:</p>
+          <p>При входе поздороваться, представиться, фиксируя внимание на лицах новых коллег.</p>
+        </div>
+      </div>
+    ),
+  },
+};
+
 interface EntryFormStepperProps {
   initialEntry?: DiaryEntry | null;
 }
@@ -24,6 +127,8 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
   const router = useRouter();
   const addEntry = useDiaryStore((state) => state.addEntry);
   const updateEntry = useDiaryStore((state) => state.updateEntry);
+
+  const [hintOpen, setHintOpen] = useState(false);
 
   const [formState, setFormState] = useState<FormState>(() => ({
     currentStep: 'situation',
@@ -232,10 +337,36 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
         <div className="text-caption">
           Шаг {currentStepIndex + 1} из {FORM_STEPS.length}
         </div>
-        <h2 className="text-h1 mt-1">
-          {STEP_TITLES[formState.currentStep]}
-        </h2>
+        <div className="flex items-center justify-center gap-2 mt-1">
+          <h2 className="text-h1">
+            {STEP_TITLES[formState.currentStep]}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setHintOpen(true)}
+            className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center text-sm font-medium"
+            aria-label="Подсказка"
+          >
+            ?
+          </button>
+        </div>
       </div>
+
+      {/* Модальное окно с подсказкой */}
+      <Dialog
+        open={hintOpen}
+        onOpenChange={setHintOpen}
+        title={STEP_HINTS[formState.currentStep].title}
+      >
+        <DialogContent>
+          {STEP_HINTS[formState.currentStep].content}
+        </DialogContent>
+        <DialogFooter>
+          <Button variant="primary" onClick={() => setHintOpen(false)}>
+            Понятно
+          </Button>
+        </DialogFooter>
+      </Dialog>
 
       {/* Прогресс бар */}
       <div className="w-full bg-gray-90 dark:bg-gray-35 rounded-full h-2">

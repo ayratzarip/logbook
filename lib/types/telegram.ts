@@ -102,6 +102,9 @@ export interface TelegramWebApp {
   requestContact: (callback?: (granted: boolean) => void) => void;
   onEvent: (eventType: string, eventHandler: () => void) => void;
   offEvent: (eventType: string, eventHandler: () => void) => void;
+  // Bot API 8.0+
+  addToHomeScreen: () => void;
+  checkHomeScreenStatus: (callback: (status: 'added' | 'missed' | 'unknown') => void) => void;
 }
 
 export interface TelegramUser {
