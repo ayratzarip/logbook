@@ -20,7 +20,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-95 dark:bg-brand-10">
       <Header />
       
-      <main className="mx-auto max-w-screen-lg px-4 py-6 space-y-6">
+      <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
         <div className="mb-6">
           <SearchBar />
         </div>
