@@ -10,10 +10,18 @@ function sanitizeEntry(raw: unknown): DiaryEntry | null {
   if (typeof entry.id !== 'string') return null;
 
   const ensureString = (value: unknown) => (typeof value === 'string' ? value : '');
+  
+  let validDate = new Date().toISOString();
+  if (typeof entry.dateTime === 'string') {
+    const d = new Date(entry.dateTime);
+    if (!isNaN(d.getTime())) {
+      validDate = entry.dateTime;
+    }
+  }
 
   return {
     id: entry.id,
-    dateTime: typeof entry.dateTime === 'string' ? entry.dateTime : new Date().toISOString(),
+    dateTime: validDate,
     situationDescription: ensureString(entry.situationDescription),
     attentionFocus: ensureString(entry.attentionFocus),
     thoughts: ensureString(entry.thoughts),
@@ -142,13 +150,15 @@ export const telegramStorageService = {
   async searchEntries(query: string): Promise<DiaryEntry[]> {
     const entries = await this.getAllEntries();
     const lowerQuery = query.toLowerCase();
+    const safeInclude = (text: string) => (text || '').toLowerCase().includes(lowerQuery);
+    
     return entries.filter(entry => 
-      entry.situationDescription.toLowerCase().includes(lowerQuery) ||
-      entry.attentionFocus.toLowerCase().includes(lowerQuery) ||
-      entry.thoughts.toLowerCase().includes(lowerQuery) ||
-      entry.bodySensations.toLowerCase().includes(lowerQuery) ||
-      entry.actions.toLowerCase().includes(lowerQuery) ||
-      entry.futureActions.toLowerCase().includes(lowerQuery)
+      safeInclude(entry.situationDescription) ||
+      safeInclude(entry.attentionFocus) ||
+      safeInclude(entry.thoughts) ||
+      safeInclude(entry.bodySensations) ||
+      safeInclude(entry.actions) ||
+      safeInclude(entry.futureActions)
     );
   },
 

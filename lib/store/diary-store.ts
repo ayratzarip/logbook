@@ -73,13 +73,15 @@ export const useDiaryStore = create<DiaryState>((set, get) => ({
     if (!searchQuery.trim()) return entries;
     
     const lowerQuery = searchQuery.toLowerCase();
+    const safeInclude = (text?: string) => (text || '').toLowerCase().includes(lowerQuery);
+
     return entries.filter(entry => 
-      (entry.situationDescription || '').toLowerCase().includes(lowerQuery) ||
-      (entry.attentionFocus || '').toLowerCase().includes(lowerQuery) ||
-      (entry.thoughts || '').toLowerCase().includes(lowerQuery) ||
-      (entry.bodySensations || '').toLowerCase().includes(lowerQuery) ||
-      (entry.actions || '').toLowerCase().includes(lowerQuery) ||
-      (entry.futureActions || '').toLowerCase().includes(lowerQuery)
+      safeInclude(entry.situationDescription) ||
+      safeInclude(entry.attentionFocus) ||
+      safeInclude(entry.thoughts) ||
+      safeInclude(entry.bodySensations) ||
+      safeInclude(entry.actions) ||
+      safeInclude(entry.futureActions)
     );
   },
 }));
