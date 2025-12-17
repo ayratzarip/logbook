@@ -12,7 +12,13 @@ export function ErudaProvider() {
     const isDevelopment = process.env.NODE_ENV === 'development';
     const hasErudaParam = typeof window !== 'undefined' && window.location.search.includes('eruda=true');
     
-    setShouldLoadEruda(isDevelopment || hasErudaParam);
+    if (isDevelopment || hasErudaParam) {
+      // Небольшая задержка, чтобы дать время Telegram WebApp инициализироваться
+      // Это предотвращает конфликты при загрузке
+      setTimeout(() => {
+        setShouldLoadEruda(true);
+      }, 500);
+    }
   }, []);
 
   if (!shouldLoadEruda) {

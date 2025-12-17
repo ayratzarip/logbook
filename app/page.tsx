@@ -1,18 +1,40 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { SearchBar } from '@/components/diary/SearchBar';
 import { EntryList } from '@/components/diary/EntryList';
 import { useDiaryStore } from '@/lib/store/diary-store';
+import { waitForTelegramWebApp } from '@/lib/utils/telegram';
 
 export default function Home() {
   const loadEntries = useDiaryStore((state) => state.loadEntries);
   const isLoading = useDiaryStore((state) => state.isLoading);
+  const [isTelegramReady, setIsTelegramReady] = useState(false);
 
   useEffect(() => {
-    loadEntries();
+    async function initializeAndLoad() {
+      try {
+        // Ждем готовности Telegram WebApp перед загрузкой данных
+        // Это особенно важно для CloudStorage, который может быть недоступен сразу
+        await waitForTelegramWebApp(3000);
+        setIsTelegramReady(true);
+        
+        // Небольшая задержка для гарантии полной инициализации CloudStorage
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Теперь безопасно загружаем данные
+        loadEntries();
+      } catch (error) {
+        console.error('[Home] Ошибка инициализации:', error);
+        // Продолжаем работу даже при ошибке
+        setIsTelegramReady(true);
+        loadEntries();
+      }
+    }
+
+    initializeAndLoad();
   }, [loadEntries]);
 
   return (

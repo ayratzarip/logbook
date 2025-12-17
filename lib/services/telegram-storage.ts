@@ -84,18 +84,41 @@ function isCloudStorageAvailable() {
   return true;
 }
 
-// Утилита для преобразования Promise в callback-based API
+// Утилита для преобразования Promise в callback-based API с таймаутом
 function promisify<T>(
-  fn: (callback: (error: Error | null, result: T) => void) => void
+  fn: (callback: (error: Error | null, result: T) => void) => void,
+  timeout = 5000
 ): Promise<T> {
   return new Promise((resolve, reject) => {
-    fn((error, result) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(result!);
+    let isResolved = false;
+    
+    const timeoutId = setTimeout(() => {
+      if (!isResolved) {
+        isResolved = true;
+        reject(new Error(`CloudStorage операция превысила таймаут ${timeout}мс`));
       }
-    });
+    }, timeout);
+
+    try {
+      fn((error, result) => {
+        if (isResolved) return;
+        
+        clearTimeout(timeoutId);
+        isResolved = true;
+        
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result!);
+        }
+      });
+    } catch (syncError) {
+      if (isResolved) return;
+      
+      clearTimeout(timeoutId);
+      isResolved = true;
+      reject(syncError);
+    }
   });
 }
 
@@ -144,21 +167,30 @@ export const telegramStorageService = {
     await migrateToCloudStorageIfNeeded();
     // Всегда пытаемся использовать CloudStorage, если доступен
     if (isCloudStorageAvailable()) {
-      const webApp = getTelegramWebApp()!;
-
-      try {
-        console.log('[Storage] Чтение из CloudStorage...');
-        // Получаем данные из Telegram Cloud Storage
-        const data = await promisify<string | null>((callback) => {
-          webApp.CloudStorage.getItem(STORAGE_KEY, (error, value) => {
-            if (error) {
-              console.error('[Storage] Ошибка CloudStorage.getItem:', error);
-              callback(error, null);
-            } else {
-              callback(null, value);
+      const webApp = getTelegramWebApp();
+      
+      // Дополнительная проверка перед использованием
+      if (!webApp || !webApp.CloudStorage || typeof webApp.CloudStorage.getItem !== 'function') {
+        console.warn('[Storage] CloudStorage стал недоступен после проверки, используем localStorage');
+      } else {
+        try {
+          console.log('[Storage] Чтение из CloudStorage...');
+          // Получаем данные из Telegram Cloud Storage
+          const data = await promisify<string | null>((callback) => {
+            try {
+              webApp.CloudStorage.getItem(STORAGE_KEY, (error, value) => {
+                if (error) {
+                  console.error('[Storage] Ошибка CloudStorage.getItem:', error);
+                  callback(error, null);
+                } else {
+                  callback(null, value);
+                }
+              });
+            } catch (syncError) {
+              console.error('[Storage] Синхронная ошибка при вызове CloudStorage.getItem:', syncError);
+              callback(syncError as Error, null);
             }
           });
-        });
 
         if (data) {
           console.log('[Storage] Данные получены из CloudStorage, размер:', data.length);
@@ -170,9 +202,10 @@ export const telegramStorageService = {
         } else {
           console.log('[Storage] CloudStorage пуст, проверяем localStorage как fallback');
         }
-      } catch (error) {
-        console.error('[Storage] Критическая ошибка при получении записей из CloudStorage:', error);
-        // Продолжаем к fallback на localStorage
+        } catch (error) {
+          console.error('[Storage] Критическая ошибка при получении записей из CloudStorage:', error);
+          // Продолжаем к fallback на localStorage
+        }
       }
     }
 
