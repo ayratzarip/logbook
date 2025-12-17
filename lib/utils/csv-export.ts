@@ -11,14 +11,21 @@ function sanitizeCsvField(text: string): string {
 export function exportToCsv(entries: DiaryEntry[]): void {
   if (entries.length === 0) return;
 
+  // Русские заголовки для лучшей читаемости
   const headers = [
-    'id', 'dateTime', 'situationDescription', 'attentionFocus',
-    'thoughts', 'bodySensations', 'actions', 'futureActions'
+    'ID',
+    'Дата и время',
+    'Описание ситуации',
+    'Фокус внимания',
+    'Мысли',
+    'Телесные ощущения',
+    'Действия и результат',
+    'Что делать в будущем'
   ];
 
   const rows = entries.map(entry => [
     sanitizeCsvField(entry.id),
-    sanitizeCsvField(format(new Date(entry.dateTime), 'yyyy-MM-dd HH:mm:ss')),
+    sanitizeCsvField(format(new Date(entry.dateTime), 'dd.MM.yyyy HH:mm')),
     sanitizeCsvField(entry.situationDescription),
     sanitizeCsvField(entry.attentionFocus),
     sanitizeCsvField(entry.thoughts),
@@ -29,12 +36,15 @@ export function exportToCsv(entries: DiaryEntry[]): void {
 
   const csvContent = [headers.join(','), ...rows].join('\n');
   
+  // BOM для правильного отображения кириллицы в Excel
   const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
   link.download = `soft_skills_logbook_export_${format(new Date(), 'yyyyMMdd_HHmmss')}.csv`;
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 

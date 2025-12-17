@@ -59,11 +59,16 @@ export function parseEntryToFormState(entry: DiaryEntry | null): Partial<FormSta
     bodySensationsText = entry.bodySensations.substring(intensityMatch[0].length).trim();
   }
 
-  // Парсинг действий (разделитель ||RESULT:)
+  // Парсинг действий (поддерживаем старый формат ||RESULT: и новый Результат:)
   let actionsText = entry.actions;
   let selectedActionResult: string | null = null;
-  if (entry.actions.includes(ACTION_RESULT_SEPARATOR)) {
-    const parts = entry.actions.split(ACTION_RESULT_SEPARATOR);
+  const oldSeparator = '||RESULT:';
+  const separator = entry.actions.includes(ACTION_RESULT_SEPARATOR) 
+    ? ACTION_RESULT_SEPARATOR 
+    : (entry.actions.includes(oldSeparator) ? oldSeparator : null);
+  
+  if (separator) {
+    const parts = entry.actions.split(separator);
     actionsText = parts[0].trim();
     const resultText = parts[1]?.trim();
     if (resultText && ACTION_RESULT_OPTIONS.includes(resultText)) {
@@ -71,11 +76,16 @@ export function parseEntryToFormState(entry: DiaryEntry | null): Partial<FormSta
     }
   }
 
-  // Парсинг будущих действий (разделитель ||FA_OPTION:)
+  // Парсинг будущих действий (поддерживаем старый формат ||FA_OPTION: и новый Что делать в будущем:)
   let futureActionsText = entry.futureActions;
   let selectedFutureActionOption: string | null = null;
-  if (entry.futureActions.includes(FUTURE_ACTION_SEPARATOR)) {
-    const parts = entry.futureActions.split(FUTURE_ACTION_SEPARATOR);
+  const oldFutureSeparator = '||FA_OPTION:';
+  const futureSeparator = entry.futureActions.includes(FUTURE_ACTION_SEPARATOR)
+    ? FUTURE_ACTION_SEPARATOR
+    : (entry.futureActions.includes(oldFutureSeparator) ? oldFutureSeparator : null);
+  
+  if (futureSeparator) {
+    const parts = entry.futureActions.split(futureSeparator);
     const optionText = parts[0]?.trim();
     if (optionText && FUTURE_ACTION_OPTIONS.includes(optionText)) {
       selectedFutureActionOption = optionText;

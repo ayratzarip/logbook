@@ -142,10 +142,12 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
         thoughtsText: initialEntry.thoughts,
         bodySensationsIntensity: parseInt(initialEntry.bodySensations.match(/^(\d+)/)?.[1] || '0', 10),
         bodySensationsText: initialEntry.bodySensations.replace(/^\d+\.\s*/, ''),
-        actionsText: initialEntry.actions.split(/\|\|RESULT:/)[0].trim(),
+        // Поддерживаем оба формата сепараторов (старый ||RESULT: и новый Результат:)
+        actionsText: initialEntry.actions.split(/Результат:|\|\|RESULT:/)[0].trim(),
         selectedActionResult: null,
         selectedFutureActionOption: null,
-        futureActionsText: initialEntry.futureActions.split(/\|\|FA_OPTION:/)[1]?.trim() || '',
+        // Поддерживаем оба формата сепараторов (старый ||FA_OPTION: и новый Что делать в будущем:)
+        futureActionsText: initialEntry.futureActions.split(/Что делать в будущем:|\|\|FA_OPTION:/)[1]?.trim() || '',
         entryDateTime: new Date(initialEntry.dateTime),
       };
     }

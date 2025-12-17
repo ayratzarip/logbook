@@ -29,8 +29,8 @@ export const FUTURE_ACTION_OPTIONS = [
   'Не знаю, что делать в подобных ситуациях',
 ];
 
-export const ACTION_RESULT_SEPARATOR = '||RESULT:';
-export const FUTURE_ACTION_SEPARATOR = '||FA_OPTION:';
+export const ACTION_RESULT_SEPARATOR = 'Результат:';
+export const FUTURE_ACTION_SEPARATOR = 'Что делать в будущем:';
 
 export const FORM_STEPS: FormStep[] = [
   'situation',
