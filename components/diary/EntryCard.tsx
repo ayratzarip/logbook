@@ -15,9 +15,11 @@ interface EntryCardProps {
 export function EntryCard({ entry, onDelete }: EntryCardProps) {
   const [showMenu, setShowMenu] = useState(false);
 
-  const preview = entry.situationDescription.length > 100
-    ? entry.situationDescription.substring(0, 100) + '...'
-    : entry.situationDescription;
+  const preview = (entry?.situationDescription || '').length > 100
+    ? (entry?.situationDescription || '').substring(0, 100) + '...'
+    : (entry?.situationDescription || '');
+
+  if (!entry) return null;
 
   return (
     <Card variant="highlight" className="relative cursor-pointer overflow-hidden">

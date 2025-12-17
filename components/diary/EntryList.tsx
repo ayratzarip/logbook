@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useDiaryStore } from '@/lib/store/diary-store';
 import { EntryCard } from './EntryCard';
 import { Card } from '@/components/ui/card';
@@ -7,9 +8,26 @@ import { useRouter } from 'next/navigation';
 import { getTelegramWebApp } from '@/lib/utils/telegram';
 
 export function EntryList() {
-  const filteredEntries = useDiaryStore((state) => state.filteredEntries());
+  const entries = useDiaryStore((state) => state.entries);
+  const searchQuery = useDiaryStore((state) => state.searchQuery);
   const deleteEntry = useDiaryStore((state) => state.deleteEntry);
   const router = useRouter();
+
+  const filteredEntries = useMemo(() => {
+    if (!searchQuery.trim()) return entries;
+    
+    const lowerQuery = searchQuery.toLowerCase();
+    const safeInclude = (text?: string) => (text || '').toLowerCase().includes(lowerQuery);
+
+    return entries.filter(entry => 
+      safeInclude(entry.situationDescription) ||
+      safeInclude(entry.attentionFocus) ||
+      safeInclude(entry.thoughts) ||
+      safeInclude(entry.bodySensations) ||
+      safeInclude(entry.actions) ||
+      safeInclude(entry.futureActions)
+    );
+  }, [entries, searchQuery]);
 
   const handleDelete = async (id: string) => {
     const webApp = getTelegramWebApp();

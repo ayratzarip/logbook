@@ -38,7 +38,6 @@ export const metadata: Metadata = {
       { url: "/apple-icon-180x180.png", sizes: "180x180", type: "image/png" },
     ],
   },
-  themeColor: "#ffffff",
 };
 
 export const viewport = {
@@ -46,6 +45,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
