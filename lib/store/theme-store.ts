@@ -46,12 +46,14 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
       set({ theme: telegramTheme });
       applyTheme(telegramTheme);
       
-      // Слушаем изменения темы Telegram
-      webApp.onEvent('themeChanged', () => {
-        const newTheme = webApp.colorScheme || 'light';
-        set({ theme: newTheme });
-        applyTheme(newTheme);
-      });
+      // Слушаем изменения темы Telegram (если поддерживается)
+      if (typeof webApp.onEvent === 'function') {
+        webApp.onEvent('themeChanged', () => {
+          const newTheme = webApp.colorScheme || 'light';
+          set({ theme: newTheme });
+          applyTheme(newTheme);
+        });
+      }
     } else {
       // Fallback: проверяем системную тему
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

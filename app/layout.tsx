@@ -55,15 +55,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <head>
+      <body
+        className={`${inter.variable} min-h-screen bg-gray-95 dark:bg-brand-10 text-gray-0 dark:text-gray-100`}
+      >
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
         />
-      </head>
-      <body
-        className={`${inter.variable} min-h-screen bg-gray-95 dark:bg-brand-10 text-gray-0 dark:text-gray-100`}
-      >
         <PWAProvider>
           <TelegramProvider>
             {children}

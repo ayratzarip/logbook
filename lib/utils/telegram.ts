@@ -12,10 +12,12 @@ export function initTelegramWebApp(): void {
   if (!webApp) return;
   
   // Инициализация Telegram Web App
-  webApp.ready();
+  webApp.ready?.();
   
-  // Разворачиваем на весь экран
-  webApp.expand();
+  // Разворачиваем на весь экран (проверяем наличие метода)
+  if (typeof webApp.expand === 'function') {
+    webApp.expand();
+  }
   
   // Применяем тему Telegram
   if (webApp.themeParams?.bg_color) {
