@@ -29,7 +29,7 @@ export function Header() {
           <span className="text-2xl" aria-hidden>
             📔
           </span>
-          <span className="text-gray-0 dark:text-gray-100">Logbook</span>
+          <span className="text-gray-0 dark:text-gray-100">Записи</span>
         </Link>
 
         <div className="flex items-center gap-2">

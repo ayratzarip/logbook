@@ -39,7 +39,7 @@ export default function Home() {
           <Button
             variant="primary"
             size="lg"
-            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50"
+            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow z-50 bg-brand-70 text-white hover:opacity-90 focus-visible:ring-brand-70/40"
           >
             ➕
           </Button>
