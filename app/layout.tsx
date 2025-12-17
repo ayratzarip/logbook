@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { TelegramProvider } from "@/components/providers/TelegramProvider";
 import { PWAProvider } from "@/components/providers/PWAProvider";
@@ -55,9 +56,9 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
-        <script
+        <Script
           src="https://telegram.org/js/telegram-web-app.js"
-          async
+          strategy="beforeInteractive"
         />
       </head>
       <body

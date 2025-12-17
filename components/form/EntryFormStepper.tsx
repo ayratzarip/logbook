@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FormState, FormStep, DiaryEntry } from '@/lib/types/diary';
 import { FORM_STEPS, STEP_TITLES, ACTION_RESULT_OPTIONS } from '@/lib/constants/form-options';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { StepSituation } from './StepSituation';
@@ -26,8 +26,8 @@ const STEP_HINTS: Record<FormStep, { title: string; content: React.ReactNode }> 
         <p>Старайтесь записывать максимально кратко. Если писать подробно, то, во-первых, Вы быстрее устанете, во-вторых, удобнее анализировать схематичные записи.</p>
         <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
           <p className="font-semibold mb-2">Примеры:</p>
-          <p><strong>Неуспех:</strong> Первый день в Инфотехлаб. Вхожу в офис.</p>
-          <p><strong>Успех:</strong> Первое свидание с Ксюшей. В кафе Лакомка.</p>
+          <p> Первый день в Инфотехлаб. Вхожу в офис.</p>
+          <p> Первое свидание с Ксюшей. В кафе Лакомка.</p>
         </div>
       </div>
     ),
@@ -130,38 +130,43 @@ export function EntryFormStepper({ initialEntry }: EntryFormStepperProps) {
 
   const [hintOpen, setHintOpen] = useState(false);
 
-  const [formState, setFormState] = useState<FormState>(() => ({
-    currentStep: 'situation',
-    situationDescription: initialEntry?.situationDescription || '',
-    selectedAttentionOption: null,
-    attentionText: '',
-    selectedThoughtOption: null,
-    thoughtsText: '',
-    bodySensationsIntensity: 0,
-    bodySensationsText: '',
-    actionsText: '',
-    selectedActionResult: null,
-    selectedFutureActionOption: null,
-    futureActionsText: '',
-    entryDateTime: initialEntry ? new Date(initialEntry.dateTime) : new Date(),
-  }));
-
-  // Парсим начальные данные, если есть
-  useEffect(() => {
+  const [formState, setFormState] = useState<FormState>(() => {
+    // Если есть initialEntry, парсим все данные сразу при инициализации
     if (initialEntry) {
-      // Простой парсинг для редактирования
-      setFormState((prev) => ({
-        ...prev,
+      return {
+        currentStep: 'situation' as FormStep,
         situationDescription: initialEntry.situationDescription,
+        selectedAttentionOption: null,
         attentionText: initialEntry.attentionFocus,
+        selectedThoughtOption: null,
         thoughtsText: initialEntry.thoughts,
-        bodySensationsText: initialEntry.bodySensations.replace(/^\d+\.\s*/, ''),
         bodySensationsIntensity: parseInt(initialEntry.bodySensations.match(/^(\d+)/)?.[1] || '0', 10),
+        bodySensationsText: initialEntry.bodySensations.replace(/^\d+\.\s*/, ''),
         actionsText: initialEntry.actions.split(/\|\|RESULT:/)[0].trim(),
+        selectedActionResult: null,
+        selectedFutureActionOption: null,
         futureActionsText: initialEntry.futureActions.split(/\|\|FA_OPTION:/)[1]?.trim() || '',
-      }));
+        entryDateTime: new Date(initialEntry.dateTime),
+      };
     }
-  }, [initialEntry]);
+
+    // Значения по умолчанию для новой записи
+    return {
+      currentStep: 'situation' as FormStep,
+      situationDescription: '',
+      selectedAttentionOption: null,
+      attentionText: '',
+      selectedThoughtOption: null,
+      thoughtsText: '',
+      bodySensationsIntensity: 0,
+      bodySensationsText: '',
+      actionsText: '',
+      selectedActionResult: null,
+      selectedFutureActionOption: null,
+      futureActionsText: '',
+      entryDateTime: new Date(),
+    };
+  });
 
   const currentStepIndex = FORM_STEPS.indexOf(formState.currentStep);
   const isFirstStep = currentStepIndex === 0;
