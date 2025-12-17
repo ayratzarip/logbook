@@ -46,8 +46,42 @@ function getTelegramWebApp() {
 
 // Проверить, доступен ли CloudStorage
 function isCloudStorageAvailable() {
+  if (typeof window === 'undefined') return false;
+  
   const webApp = getTelegramWebApp();
-  return webApp && webApp.CloudStorage && typeof webApp.CloudStorage.getItem === 'function';
+  if (!webApp) {
+    console.log('[Storage] Telegram WebApp не доступен');
+    return false;
+  }
+  
+  // CloudStorage доступен с Bot API 6.9+
+  // Проверяем версию через isVersionAtLeast, если метод доступен
+  if (typeof webApp.isVersionAtLeast === 'function') {
+    const isSupported = webApp.isVersionAtLeast('6.9');
+    if (!isSupported) {
+      console.log('[Storage] CloudStorage требует Bot API 6.9+, текущая версия:', webApp.version);
+      return false;
+    }
+  }
+  
+  // Проверяем наличие CloudStorage объекта
+  if (!webApp.CloudStorage) {
+    console.log('[Storage] CloudStorage не доступен на этой платформе, платформа:', webApp.platform, 'версия:', webApp.version);
+    return false;
+  }
+  
+  // Проверяем наличие необходимых методов
+  const hasRequiredMethods = 
+    typeof webApp.CloudStorage.getItem === 'function' &&
+    typeof webApp.CloudStorage.setItem === 'function';
+  
+  if (!hasRequiredMethods) {
+    console.log('[Storage] CloudStorage методы не доступны');
+    return false;
+  }
+  
+  console.log('[Storage] CloudStorage доступен, платформа:', webApp.platform, 'версия:', webApp.version);
+  return true;
 }
 
 // Утилита для преобразования Promise в callback-based API
@@ -65,56 +99,104 @@ function promisify<T>(
   });
 }
 
+// Миграция данных из localStorage в CloudStorage при первом запуске
+async function migrateToCloudStorageIfNeeded() {
+  if (!isCloudStorageAvailable() || typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const webApp = getTelegramWebApp()!;
+    
+    // Проверяем, есть ли данные в CloudStorage
+    const cloudData = await promisify<string | null>((callback) => {
+      webApp.CloudStorage.getItem(STORAGE_KEY, (error, value) => {
+        callback(error, value);
+      });
+    });
+
+    // Если CloudStorage пуст, но есть данные в localStorage, мигрируем их
+    if (!cloudData) {
+      const localData = localStorage.getItem(STORAGE_KEY);
+      if (localData) {
+        console.log('[Storage] Миграция данных из localStorage в CloudStorage...');
+        await promisify<boolean>((callback) => {
+          webApp.CloudStorage.setItem(STORAGE_KEY, localData, (error, success) => {
+            if (error) {
+              console.error('[Storage] Ошибка миграции:', error);
+              callback(error, false);
+            } else {
+              console.log('[Storage] Миграция завершена успешно');
+              callback(null, success);
+            }
+          });
+        });
+      }
+    }
+  } catch (error) {
+    console.error('[Storage] Ошибка при миграции:', error);
+  }
+}
+
 export const telegramStorageService = {
   async getAllEntries(): Promise<DiaryEntry[]> {
-    // Fallback на localStorage если CloudStorage недоступен
-    if (!isCloudStorageAvailable()) {
-      if (typeof window !== 'undefined') {
-        try {
-          const data = localStorage.getItem(STORAGE_KEY);
-          if (!data) return [];
+    // Пытаемся мигрировать данные при первом запуске
+    await migrateToCloudStorageIfNeeded();
+    // Всегда пытаемся использовать CloudStorage, если доступен
+    if (isCloudStorageAvailable()) {
+      const webApp = getTelegramWebApp()!;
+
+      try {
+        console.log('[Storage] Чтение из CloudStorage...');
+        // Получаем данные из Telegram Cloud Storage
+        const data = await promisify<string | null>((callback) => {
+          webApp.CloudStorage.getItem(STORAGE_KEY, (error, value) => {
+            if (error) {
+              console.error('[Storage] Ошибка CloudStorage.getItem:', error);
+              callback(error, null);
+            } else {
+              callback(null, value);
+            }
+          });
+        });
+
+        if (data) {
+          console.log('[Storage] Данные получены из CloudStorage, размер:', data.length);
           const entries = sanitizeEntries(JSON.parse(data));
+          console.log('[Storage] Записей загружено:', entries.length);
           return entries.sort((a, b) => 
             new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
           );
-        } catch (error) {
-          console.error('Ошибка при чтении localStorage:', error);
-          return [];
+        } else {
+          console.log('[Storage] CloudStorage пуст, проверяем localStorage как fallback');
         }
+      } catch (error) {
+        console.error('[Storage] Критическая ошибка при получении записей из CloudStorage:', error);
+        // Продолжаем к fallback на localStorage
       }
-      return [];
     }
 
-    const webApp = getTelegramWebApp()!;
-
-    try {
-      // Получаем данные из Telegram Cloud Storage
-      const data = await promisify<string | null>((callback) => {
-        webApp.CloudStorage.getItem(STORAGE_KEY, (error, value) => {
-          callback(error, value);
-        });
-      });
-
-      if (!data) return [];
-      
-      const entries = sanitizeEntries(JSON.parse(data));
-      return entries.sort((a, b) => 
-        new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
-      );
-    } catch (error) {
-      console.error('Ошибка при получении записей из CloudStorage:', error);
-      // Fallback на localStorage при ошибке CloudStorage
+    // Fallback на localStorage если CloudStorage недоступен или пуст
+    if (typeof window !== 'undefined') {
       try {
+        console.log('[Storage] Чтение из localStorage...');
         const data = localStorage.getItem(STORAGE_KEY);
-        if (!data) return [];
+        if (!data) {
+          console.log('[Storage] localStorage пуст');
+          return [];
+        }
         const entries = sanitizeEntries(JSON.parse(data));
+        console.log('[Storage] Записей загружено из localStorage:', entries.length);
         return entries.sort((a, b) => 
           new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
         );
-      } catch {
+      } catch (error) {
+        console.error('[Storage] Ошибка при чтении localStorage:', error);
         return [];
       }
     }
+    
+    return [];
   },
 
   async getEntry(id: string): Promise<DiaryEntry | null> {
@@ -164,28 +246,40 @@ export const telegramStorageService = {
 
   async saveEntries(entries: DiaryEntry[]): Promise<void> {
     const data = JSON.stringify(entries);
+    console.log('[Storage] Сохранение записей, количество:', entries.length);
 
-    // Fallback на localStorage если CloudStorage недоступен
-    if (!isCloudStorageAvailable()) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, data);
+    // Всегда пытаемся сохранить в CloudStorage, если доступен
+    if (isCloudStorageAvailable()) {
+      const webApp = getTelegramWebApp()!;
+
+      try {
+        console.log('[Storage] Сохранение в CloudStorage...');
+        await promisify<boolean>((callback) => {
+          webApp.CloudStorage.setItem(STORAGE_KEY, data, (error, success) => {
+            if (error) {
+              console.error('[Storage] Ошибка CloudStorage.setItem:', error);
+              callback(error, false);
+            } else {
+              console.log('[Storage] Данные успешно сохранены в CloudStorage, success:', success);
+              callback(null, success);
+            }
+          });
+        });
+        console.log('[Storage] CloudStorage сохранение завершено успешно');
+      } catch (error) {
+        console.error('[Storage] Критическая ошибка при сохранении в CloudStorage:', error);
+        // Продолжаем к сохранению в localStorage как резервная копия
       }
-      return;
     }
 
-    const webApp = getTelegramWebApp()!;
-
-    try {
-      await promisify<boolean>((callback) => {
-        webApp.CloudStorage.setItem(STORAGE_KEY, data, (error, success) => {
-          callback(error, success);
-        });
-      });
-    } catch (error) {
-      console.error('Ошибка при сохранении в CloudStorage:', error);
-      // Fallback на localStorage при ошибке
-      if (typeof window !== 'undefined') {
+    // Всегда сохраняем резервную копию в localStorage для надежности
+    if (typeof window !== 'undefined') {
+      try {
+        console.log('[Storage] Сохранение резервной копии в localStorage...');
         localStorage.setItem(STORAGE_KEY, data);
+        console.log('[Storage] Резервная копия сохранена в localStorage');
+      } catch (error) {
+        console.error('[Storage] Ошибка при сохранении в localStorage:', error);
       }
     }
   },
